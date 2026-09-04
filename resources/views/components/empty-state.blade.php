@@ -1,0 +1,5 @@
+@props(['message' => 'Belum ada data'])
+
+<div class="text-center py-12 text-gray-400">
+    <p>{{ $message }}</p>
+</div>

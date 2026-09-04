@@ -14,8 +14,22 @@ class LoginResponse implements LoginResponseContract
 
     public function toResponse($request): Response
     {
-        return $request->wantsJson()
-            ? new JsonResponse(['two_factor' => false], 200)
-            : redirect()->intended($this->redirectPathForCurrentTeam($request, Fortify::redirects('login')));
+        if ($request->wantsJson()) {
+            return new JsonResponse(['two_factor' => false], 200);
+        }
+
+        // FR-TEN-01 / UC-19 — redirect pascalogin sesuai role.
+        // Role "tenant" belum diarahkan ke dashboard tenant karena tabel
+        // `tenants` belum dibuat pada Modul 2; akan dilengkapi saat modul
+        // manajemen tenant tersedia.
+        $user = $request->user();
+
+        if ($user && $user->role === 'admin') {
+            return redirect()->intended(route('admin.tenants.index'));
+        }
+
+        return redirect()->intended(
+            $this->redirectPathForCurrentTeam($request, Fortify::redirects('login'))
+        );
     }
 }
