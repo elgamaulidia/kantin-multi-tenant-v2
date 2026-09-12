@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamp('valid_to', 6)->nullable();
             $table->timestamps(6);
 
-           $table->unique(['tenant_id', 'id']);
+            $table->unique(['tenant_id', 'id']);
         });
     }
 
