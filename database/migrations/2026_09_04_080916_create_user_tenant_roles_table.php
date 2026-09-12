@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('user_tenant_roles', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->string('role', 30);
+            $table->timestamps(6);
+
+            $table->unique(['user_id', 'tenant_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('user_tenant_roles');
+    }
+};

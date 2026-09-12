@@ -22,6 +22,15 @@ php artisan key:generate
 6. Jalankan migrasi pada database kosong: php artisan migrate:fresh
 7. Install dan build dependency frontend: npm install lalu npm run build
 
+## Reset Database (Development)
+
+> ⚠️ **PERINGATAN:** Perintah ini menghapus SELURUH tabel di database yang sedang
+> aktif. Hanya jalankan pada database development/testing yang memang aman dihapus.
+
+```bash
+php artisan migrate:fresh --seed
+```
+
 ## Run
 
 composer run dev menjalankan server lokal, worker queue (proses latar belakang yang 
