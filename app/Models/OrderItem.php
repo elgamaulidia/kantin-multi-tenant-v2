@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class OrderItem extends Model
 {
     use HasFactory;
+    use BelongsToTenant;
 
     protected $fillable = [
         'tenant_order_id',
-        'tenant_id',
         'menu_id',
         'name_snapshot',
         'price_snapshot',

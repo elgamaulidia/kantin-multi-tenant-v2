@@ -13,18 +13,18 @@ Route::prefix('{current_team}')
 
 // === Modul 2: Route domain Kantin Multi-Tenant ===
 
-// Customer — publik, tanpa auth (SRS: pelanggan pakai sesi anonim)
+// Customer - publik, tanpa auth (SRS: pelanggan pakai sesi anonim)
 Route::name('customer.')
     ->group(base_path('routes/customer.php'));
 
-// Tenant — internal, wajib login (FR-TEN-01/UC-19)
-Route::middleware(['auth', 'verified', 'role:tenant'])
+// Tenant - internal, wajib login (FR-TEN-01/UC-19)
+Route::middleware(['auth', 'verified', 'role:tenant', 'tenant.context'])
     ->prefix('tenant/{tenant:slug}')
     ->scopeBindings()
     ->name('tenant.')
     ->group(base_path('routes/tenant.php'));
 
-// Admin — internal, wajib login (FR-TEN-01/UC-19)
+// Admin - internal, wajib login (FR-TEN-01/UC-19)
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')

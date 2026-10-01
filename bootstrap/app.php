@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\SetTeamUrlDefaults;
+use App\Http\Middleware\SetTenantContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,9 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
             SetTeamUrlDefaults::class,
         ]);
 
-        // FR-TEN-01 / UC-19 — alias middleware untuk kontrol akses berbasis role
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
+            'tenant.context' => SetTenantContext::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
