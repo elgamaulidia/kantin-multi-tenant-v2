@@ -10,11 +10,15 @@ use App\Http\Responses\RegisterResponse;
 use App\Http\Responses\TwoFactorLoginResponse;
 use App\Http\Responses\VerifyEmailResponse;
 use App\Models\TeamInvitation;
+use App\Models\User;
+use App\Support\Auth\LoginLockout;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Fortify\Contracts\RegisterResponse as RegisterResponseContract;
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse as TwoFactorLoginResponseContract;
@@ -42,6 +46,7 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureActions();
+        $this->configureAuthentication();
         $this->configureViews();
         $this->configureRateLimiting();
     }
@@ -56,6 +61,47 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
+     * Configure Fortify authentication.
+     */
+    private function configureAuthentication(): void
+    {
+        Fortify::authenticateUsing(function (Request $request) {
+            $email = (string) $request->input(Fortify::username());
+            $lockout = app(LoginLockout::class);
+
+            if ($lockout->isLocked($email)) {
+                throw ValidationException::withMessages([
+                    Fortify::username() => 'Terlalu banyak percobaan. '
+                        .'Coba lagi dalam '.$lockout->minutesRemaining($email).' menit.',
+                ]);
+            }
+
+            $user = User::query()
+                ->where('email', $email)
+                ->first();
+
+            if (
+                $user !== null
+                && $user->isActive()
+                && Hash::check(
+                    (string) $request->input('password'),
+                    $user->password
+                )
+            ) {
+                $lockout->clear($email);
+
+                return $user;
+            }
+
+            $lockout->recordFailure($email);
+
+            throw ValidationException::withMessages([
+                Fortify::username() => 'Surel atau kata sandi tidak sesuai.',
+            ]);
+        });
+    }
+
+    /**
      * Configure Fortify views.
      */
     private function configureViews(): void
@@ -63,14 +109,30 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn (Request $request) => view('pages::auth.login', [
             'teamInvitation' => $this->teamInvitation($request),
         ]));
-        Fortify::verifyEmailView(fn () => view('pages::auth.verify-email'));
-        Fortify::twoFactorChallengeView(fn () => view('pages::auth.two-factor-challenge'));
-        Fortify::confirmPasswordView(fn () => view('pages::auth.confirm-password'));
+
+        Fortify::verifyEmailView(
+            fn () => view('pages::auth.verify-email')
+        );
+
+        Fortify::twoFactorChallengeView(
+            fn () => view('pages::auth.two-factor-challenge')
+        );
+
+        Fortify::confirmPasswordView(
+            fn () => view('pages::auth.confirm-password')
+        );
+
         Fortify::registerView(fn (Request $request) => view('pages::auth.register', [
             'teamInvitation' => $this->teamInvitation($request),
         ]));
-        Fortify::resetPasswordView(fn () => view('pages::auth.reset-password'));
-        Fortify::requestPasswordResetLinkView(fn () => view('pages::auth.forgot-password'));
+
+        Fortify::resetPasswordView(
+            fn () => view('pages::auth.reset-password')
+        );
+
+        Fortify::requestPasswordResetLinkView(
+            fn () => view('pages::auth.forgot-password')
+        );
     }
 
     /**
@@ -79,20 +141,23 @@ class FortifyServiceProvider extends ServiceProvider
     private function configureRateLimiting(): void
     {
         RateLimiter::for('two-factor', function (Request $request) {
-            return Limit::perMinute(5)->by($request->session()->get('login.id'));
+            return Limit::perMinute(5)
+                ->by($request->session()->get('login.id'));
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
-
-            return Limit::perMinute(5)->by($throttleKey);
+            // Lapis per-IP terhadap brute force massal;
+            // penguncian per akun ditangani LoginLockout.
+            return Limit::perMinute(20)
+                ->by($request->ip() ?? 'unknown');
         });
 
         RateLimiter::for('passkeys', function (Request $request) {
             $credentialId = $request->input('credential.id');
 
             return Limit::perMinute(10)->by(
-                ($credentialId ?: $request->session()->getId()).'|'.$request->ip(),
+                ($credentialId ?: $request->session()->getId())
+                    .'|'.$request->ip(),
             );
         });
     }

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Canteen;
 use App\Models\User;
+use App\Models\UserCanteenRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -53,6 +55,14 @@ class AuthorizationTest extends TestCase
         $user = User::factory()->create([
             'role' => 'admin',
             'email_verified_at' => now(),
+        ]);
+
+        $canteen = Canteen::factory()->create();
+
+        UserCanteenRole::create([
+            'user_id' => $user->id,
+            'canteen_id' => $canteen->id,
+            'role' => 'owner',
         ]);
 
         $response = $this->actingAs($user)->get('/admin/tenants');

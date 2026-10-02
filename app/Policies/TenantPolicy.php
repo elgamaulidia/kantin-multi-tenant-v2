@@ -19,36 +19,42 @@ class TenantPolicy
 
     public function viewAny(User $user): bool
     {
-        return UserCanteenRole::query()
-            ->where('user_id', $user->id)
-            ->exists();
+        return $user->isAdmin()
+            || UserCanteenRole::query()
+                ->where('user_id', $user->id)
+                ->exists();
     }
 
     public function create(User $user): bool
     {
-        return UserCanteenRole::query()
-            ->where('user_id', $user->id)
-            ->whereIn('role', ['owner', 'manager'])
-            ->exists();
+        return $user->isAdmin()
+            || UserCanteenRole::query()
+                ->where('user_id', $user->id)
+                ->whereIn('role', ['owner', 'manager'])
+                ->exists();
     }
 
     public function update(User $user, Tenant $tenant): bool
     {
-        return $this->managesCanteen($user, $tenant->canteen_id);
+        return $user->isAdmin()
+            || $this->managesCanteen($user, $tenant->canteen_id);
     }
 
     public function scheduleCommission(User $user, Tenant $tenant): bool
     {
-        return $this->managesCanteen($user, $tenant->canteen_id);
+        return $user->isAdmin()
+            || $this->managesCanteen($user, $tenant->canteen_id);
     }
 
     public function manageBank(User $user, Tenant $tenant): bool
     {
-        return $this->managesCanteen($user, $tenant->canteen_id);
+        return $user->isAdmin()
+            || $this->managesCanteen($user, $tenant->canteen_id);
     }
 
     public function assignRole(User $user, Tenant $tenant): bool
     {
-        return $this->managesCanteen($user, $tenant->canteen_id);
+        return $user->isAdmin()
+            || $this->managesCanteen($user, $tenant->canteen_id);
     }
 }

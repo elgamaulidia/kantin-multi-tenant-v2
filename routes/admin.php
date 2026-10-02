@@ -4,6 +4,11 @@ use App\Modules\Admin\Http\Controllers\AdminCommissionController;
 use App\Modules\Admin\Http\Controllers\AdminTenantController;
 use Illuminate\Support\Facades\Route;
 
+// Dashboard admin — UC-19
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
 // FR-ADM-01 — Kelola tenant & skema komisi (UC-21)
 
 Route::get('/tenants', [AdminTenantController::class, 'index'])

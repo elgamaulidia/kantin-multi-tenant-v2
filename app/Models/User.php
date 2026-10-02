@@ -57,6 +57,34 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
+     * Menentukan apakah pengguna merupakan pengelola/admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Menentukan apakah pengguna merupakan operator tenant.
+     */
+    public function isTenantOperator(): bool
+    {
+        return $this->role === 'tenant'
+            && UserTenantRole::query()
+                ->where('user_id', $this->id)
+                ->whereIn('role', ['owner', 'manager', 'finance'])
+                ->exists();
+    }
+
+    /**
+     * Menentukan apakah pengguna aktif.
+     */
+    public function isActive(): bool
+    {
+        return $this->account_status === 'active';
+    }
+
+    /**
      * Get the user's initials
      */
     public function initials(): string
