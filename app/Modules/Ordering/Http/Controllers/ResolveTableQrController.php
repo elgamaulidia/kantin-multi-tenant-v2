@@ -33,6 +33,6 @@ final class ResolveTableQrController extends Controller
             sameSite: 'lax',
         );
 
-        return redirect('/'.$result['canteen']->slug)->withCookie($cookie);
+        return redirect('/'.$result['canteen']->slug.'/meja')->withCookie($cookie);
     }
 }
