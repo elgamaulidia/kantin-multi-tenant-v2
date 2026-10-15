@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-layouts.admin title="Meja & QR">
 <div class="container mx-auto px-4 py-6">
     <h1 class="text-2xl font-bold mb-4">Kelola Meja dan QR Code</h1>
 
@@ -26,6 +24,13 @@
                 class="mt-2 w-full rounded border p-2"
                 onclick="this.select()">
             <p class="mt-2 text-sm">Simpan URL ini sebelum menerbitkan QR baru.</p>
+            @php($qrSvg = app(\App\Modules\Admin\Services\QrCodeSvg::class)->render(session('issued_qr_url')))
+            <div class="mt-4 w-64 bg-white p-2">{!! $qrSvg !!}</div>
+            <div class="mt-3 flex gap-2 print:hidden">
+                <a download="qr-meja.svg" class="rounded border px-3 py-1"
+                   href="data:image/svg+xml;charset=utf-8,{{ rawurlencode($qrSvg) }}">Unduh QR (SVG)</a>
+                <button type="button" class="rounded border px-3 py-1" onclick="window.print()">Cetak</button>
+            </div>
         </div>
     @endif
 
@@ -150,4 +155,4 @@
         <p>Belum ada meja yang terdaftar.</p>
     @endforelse
 </div>
-@endsection
+</x-layouts.admin>
