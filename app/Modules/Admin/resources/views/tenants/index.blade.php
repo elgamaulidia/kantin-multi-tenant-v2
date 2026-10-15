@@ -1,3 +1,5 @@
+php artisan view:clear
+php artisan test --compact
 <x-layouts.admin title="Tenant">
     @if (session('status'))
         <div class="mb-4 rounded-lg bg-green-100 px-4 py-2 text-sm text-green-800 dark:bg-green-900/40 dark:text-green-300">

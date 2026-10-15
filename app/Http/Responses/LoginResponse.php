@@ -18,18 +18,17 @@ class LoginResponse implements LoginResponseContract
             return new JsonResponse(['two_factor' => false], 200);
         }
 
-        // FR-TEN-01 / UC-19 — redirect pascalogin sesuai role.
-        // Role "tenant" belum diarahkan ke dashboard tenant karena tabel
-        // `tenants` belum dibuat pada Modul 2; akan dilengkapi saat modul
-        // manajemen tenant tersedia.
         $user = $request->user();
 
         if ($user && $user->role === 'admin') {
-            return redirect()->intended(route('admin.tenants.index'));
+            return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->intended(
-            $this->redirectPathForCurrentTeam($request, Fortify::redirects('login'))
+        return redirect()->to(
+            $this->redirectPathForCurrentTeam(
+                $request,
+                Fortify::redirects('login')
+            )
         );
     }
 }

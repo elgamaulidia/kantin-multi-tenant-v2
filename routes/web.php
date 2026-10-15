@@ -31,3 +31,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(base_path('routes/admin.php'));
 
 require __DIR__.'/settings.php';
+
+// UC-02: entry QR meja (token opaque, rate limited)
+\Illuminate\Support\Facades\Route::get('/q/{token_meja}', \App\Modules\Ordering\Http\Controllers\ResolveTableQrController::class)->middleware('throttle:30,1')->name('customer.scan');
