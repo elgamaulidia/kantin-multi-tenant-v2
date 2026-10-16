@@ -5,8 +5,8 @@ namespace App\Modules\Ordering\Services;
 use App\Models\DiningTable;
 use App\Models\TableQrToken;
 use App\Support\Tokens\OpaqueToken;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 final class TableQrTokenService

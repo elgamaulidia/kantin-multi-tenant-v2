@@ -55,8 +55,8 @@ test('QR meja aktif membuat sesi pelanggan anonim', function () {
         ->and($session->status)->toBe('active')
         ->and(strlen($session->session_token_hash))->toBe(32)
         ->and($session->expires_at->timestamp)
-            ->toBeGreaterThanOrEqual(now()->addHours(4)->timestamp - 2)
-            ->toBeLessThanOrEqual(now()->addHours(4)->timestamp + 2);
+        ->toBeGreaterThanOrEqual(now()->addHours(4)->timestamp - 2)
+        ->toBeLessThanOrEqual(now()->addHours(4)->timestamp + 2);
 });
 
 test('QR yang tidak dikenal ditolak', function () {

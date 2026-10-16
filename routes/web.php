@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureTeamMembership;
+use App\Modules\Ordering\Http\Controllers\ResolveTableQrController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -34,4 +35,4 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 require __DIR__.'/settings.php';
 
 // UC-02: entry QR meja (token opaque, rate limited)
-\Illuminate\Support\Facades\Route::get('/q/{token_meja}', \App\Modules\Ordering\Http\Controllers\ResolveTableQrController::class)->middleware('throttle:30,1')->name('customer.scan');
+Route::get('/q/{token_meja}', ResolveTableQrController::class)->middleware('throttle:30,1')->name('customer.scan');

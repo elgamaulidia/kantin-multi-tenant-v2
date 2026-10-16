@@ -49,6 +49,7 @@ class QrTableSessionTest extends TestCase
     {
         return app(TableQrTokenService::class)->issue($table);
     }
+
     public function test_valid_scan_creates_bound_session_with_secure_cookie(): void
     {
         $canteen = $this->canteen();
@@ -82,6 +83,7 @@ class QrTableSessionTest extends TestCase
         $this->assertSame(1, TableQrToken::query()
             ->where('dining_table_id', $table->id)->where('status', 'active')->count());
     }
+
     public function test_invalid_tokens_return_generic_404(): void
     {
         $this->get(route('customer.scan', ['token_meja' => 'tidak-ada-token']))->assertNotFound();
@@ -103,6 +105,7 @@ class QrTableSessionTest extends TestCase
 
         $this->assertSame(0, CustomerSession::query()->count());
     }
+
     public function test_token_is_opaque_and_stored_only_as_hash(): void
     {
         $issued = $this->issue($this->table());

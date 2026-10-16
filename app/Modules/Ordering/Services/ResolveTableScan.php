@@ -6,6 +6,7 @@ use App\Models\Canteen;
 use App\Models\CustomerSession;
 use App\Models\DiningTable;
 use App\Models\TableQrToken;
+use App\Modules\Catalog\Services\TenantOpeningHours;
 use App\Support\Tokens\OpaqueToken;
 use Illuminate\Support\Str;
 
@@ -41,7 +42,7 @@ final class ResolveTableScan
             return null;
         }
 
-        if (! app(\App\Modules\Catalog\Services\TenantOpeningHours::class)->canteenIsOpen($canteen->id)) {
+        if (! app(TenantOpeningHours::class)->canteenIsOpen($canteen->id)) {
             return ['closed' => true, 'canteen' => $canteen, 'table' => $table];
         }
 

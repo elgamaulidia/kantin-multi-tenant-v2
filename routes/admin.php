@@ -1,8 +1,8 @@
 <?php
 
 use App\Modules\Admin\Http\Controllers\AdminCommissionController;
-use App\Modules\Admin\Http\Controllers\AdminTenantController;
 use App\Modules\Admin\Http\Controllers\AdminDiningTableController;
+use App\Modules\Admin\Http\Controllers\AdminTenantController;
 use Illuminate\Support\Facades\Route;
 
 // Dashboard admin â€” UC-19
