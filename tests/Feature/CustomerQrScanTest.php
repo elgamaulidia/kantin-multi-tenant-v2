@@ -40,7 +40,7 @@ test('QR meja aktif membuat sesi pelanggan anonim', function () {
         'token_meja' => $plain,
     ]));
 
-    $response->assertRedirect(route('customer.home', [
+    $response->assertRedirect(route('customer.welcome', [
         'canteen' => $canteen->slug,
     ]));
 

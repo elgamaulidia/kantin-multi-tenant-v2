@@ -41,6 +41,10 @@ final class ResolveTableScan
             return null;
         }
 
+        if (! app(\App\Modules\Catalog\Services\TenantOpeningHours::class)->canteenIsOpen($canteen->id)) {
+            return ['closed' => true, 'canteen' => $canteen, 'table' => $table];
+        }
+
         $sessionToken = OpaqueToken::issue(32);
 
         (new CustomerSession)->forceFill([
