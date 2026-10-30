@@ -2,28 +2,79 @@
 
 namespace App\Modules\Catalog\Services;
 
+use App\Models\Canteen;
 use App\Models\Menu;
+use App\Models\Tenant;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
-class PublicCatalogQuery
+/**
+ * Query lintas-tenant yang SAH untuk katalog publik satu kantin. Bypass global scope
+ * dilakukan eksplisit lalu diganti filter pengganti: hanya tenant milik canteen tsb,
+ * berstatus aktif, dan menu yang sellable. Ditempatkan di class khusus agar mudah diaudit.
+ */
+final class PublicCatalogQuery
 {
     /**
-     * Ambil daftar menu aktif untuk satu canteen (lintas tenant),
-     * dipakai oleh katalog publik pelanggan setelah scan QR meja.
+     * Method lama proyek ini dipertahankan agar pemakai lama tidak rusak.
      *
-     * Bypass global scope tenant SENGAJA dipakai di sini karena
-     * pelanggan perlu melihat menu dari semua tenant dalam satu canteen.
-     * Filter pengganti: canteen_id (via relasi tenant) + status aktif.
+     * @return Collection<int, Menu>
      */
     public function menusForCanteen(int $canteenId): Collection
     {
-        return Menu::withoutGlobalScopes()
+        return Menu::query()
+            ->withoutGlobalScope('tenant')
             ->whereHas('tenant', function ($query) use ($canteenId): void {
-                $query->where('canteen_id', $canteenId)
-                    ->where('status', 'active');
+                $query->where('canteen_id', $canteenId)->where('status', 'active');
             })
             ->where('is_available', true)
             ->with(['category', 'tenant'])
             ->get();
+    }
+
+    /** @return Collection<int, Menu> */
+    public function forCanteen(Canteen $canteen): Collection
+    {
+        return Menu::query()
+            ->withoutGlobalScope('tenant')
+            ->where('is_available', true)
+            ->whereHas('tenant', function ($query) use ($canteen): void {
+                $query->where('canteen_id', $canteen->id)->where('status', 'active');
+            })
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Katalog publik paginated + searchable + filter tenant. Eager load tenant/category
+     * (jumlah query tetap, anti N+1). Bypass scope diganti filter canteen/status/sellable.
+     *
+     * @return LengthAwarePaginator<int, Menu>
+     */
+    public function browse(Canteen $canteen, string $search = '', ?int $tenantId = null): LengthAwarePaginator
+    {
+        return Menu::query()
+            ->withoutGlobalScope('tenant')
+            ->sellable()
+            ->whereHas('tenant', function ($query) use ($canteen): void {
+                $query->where('canteen_id', $canteen->id)->where('status', 'active');
+            })
+            ->when($tenantId !== null, fn ($query) => $query->where('tenant_id', $tenantId))
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
+            ->with(['tenant:id,display_name', 'category:id,name'])
+            ->orderBy('name')
+            ->paginate(16)
+            ->withQueryString();
+    }
+
+    /** @return SupportCollection<int, Tenant> */
+    public function activeTenants(Canteen $canteen): SupportCollection
+    {
+        return Tenant::query()
+            ->where('canteen_id', $canteen->id)
+            ->where('status', 'active')
+            ->orderBy('display_name')
+            ->get(['id', 'display_name']);
     }
 }

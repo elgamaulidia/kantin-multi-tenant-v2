@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
 
 // Dashboard tenant — UC-19
@@ -24,3 +25,7 @@ Route::get('/kds', function () {
 Route::get('/reports', function () {
     return 'Laporan tenant (belum diimplementasikan)';
 })->name('reports');
+
+// UC-13 / UC-14 - Kelola menu & stok (komponen Livewire catalog::menu-manager, Modul 7)
+Route::get('/menu-manager', fn (Tenant $tenant) => view('catalog::tenant.menu-manager', ['tenant' => $tenant]))
+    ->name('menu-manager');
