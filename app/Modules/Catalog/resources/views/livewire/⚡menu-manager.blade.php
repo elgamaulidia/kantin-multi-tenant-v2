@@ -222,7 +222,7 @@ new class extends Component
     <section>
         <h2 class="font-semibold">Kategori</h2>
         <div class="mt-2 flex flex-wrap items-end gap-2">
-            <x-input name="newCategory" label="Kategori baru" wire:model="newCategory" />
+            <div class="flex flex-col gap-1"><label for="newCategory" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Kategori baru</label><x-input id="newCategory" name="newCategory" wire:model="newCategory" /></div>
             <x-button type="button" wire:click="addCategory">Tambah Kategori</x-button>
         </div>
         <p class="mt-2 text-sm text-zinc-500">{{ $this->categories->pluck('name')->join(', ') ?: 'Belum ada kategori.' }}</p>
@@ -232,7 +232,7 @@ new class extends Component
         <h2 class="font-semibold">{{ $editingId ? 'Ubah Menu' : 'Tambah Menu' }}</h2>
         <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-                <x-input name="name" label="Nama" wire:model="name" />
+                <div class="flex flex-col gap-1"><label for="name" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nama</label><x-input id="name" name="name" wire:model="name" /></div>
                 @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="flex flex-col gap-1">
@@ -246,19 +246,19 @@ new class extends Component
                 @error('categoryId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="sm:col-span-2">
-                <x-input name="description" label="Deskripsi (opsional)" wire:model="description" />
+                <div class="flex flex-col gap-1"><label for="description" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Deskripsi (opsional)</label><x-input id="description" name="description" wire:model="description" /></div>
                 @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div>
-                <x-input name="basePrice" label="Harga (Rp)" type="number" wire:model="basePrice" />
+                <div class="flex flex-col gap-1"><label for="basePrice" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Harga (Rp)</label><x-input id="basePrice" name="basePrice" type="number" wire:model="basePrice" /></div>
                 @error('basePrice') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div>
-                <x-input name="prepMinutes" label="Waktu siap (menit)" type="number" wire:model="prepMinutes" />
+                <div class="flex flex-col gap-1"><label for="prepMinutes" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Waktu siap (menit)</label><x-input id="prepMinutes" name="prepMinutes" type="number" wire:model="prepMinutes" /></div>
                 @error('prepMinutes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div>
-                <x-input name="stockQty" label="Stok" type="number" wire:model="stockQty" />
+                <div class="flex flex-col gap-1"><label for="stockQty" class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Stok</label><x-input id="stockQty" name="stockQty" type="number" wire:model="stockQty" /></div>
                 @error('stockQty') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
             <div class="flex flex-col gap-1">

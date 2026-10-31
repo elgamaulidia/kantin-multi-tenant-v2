@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'Dasbor Tenant' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="bg-gray-100 min-h-screen flex">
     <aside class="w-64 bg-white border-r hidden md:block">
@@ -24,5 +25,6 @@
             {{ $slot }}
         </main>
     </div>
+    @livewireScripts
 </body>
 </html>
